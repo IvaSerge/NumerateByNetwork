@@ -33,6 +33,8 @@ def SetpParVal(elem, name, pValue):
 
 def getNextObj(_startObj):
 	global objectList
+	global wireIdList
+	_outlist = list()
 	objectListId = [i.Id for i in objectList]
 	#получение провода из стартового объекта
 	startObjId = _startObj.Id
@@ -44,13 +46,14 @@ def getNextObj(_startObj):
 	
 	
 	conRefs = conList[0].AllRefs
-	_outlist = list()
 	wire = None
 	for con in conRefs:
 		conOwner = con.Owner
 		ownerCategory = conOwner.Category.Id.IntegerValue
 		wireCat = -2008039
-		if ownerCategory == wireCat:
+		#проверка, чтоб был найден новый провод
+		if ownerCategory == wireCat and conOwner.Id not in wireIdList:
+			wireIdList.append(conOwner.Id)
 			wire = conOwner
 	
 	#получение из провода следующего объетка
@@ -83,6 +86,7 @@ startObj = UnwrapElement(IN[1])
 
 
 objectList = list()
+wireIdList = list()
 objectList.append(startObj)
 
 #Поиск следующего объекта. Продолжать до тех пор, пока есть следующий объект.
